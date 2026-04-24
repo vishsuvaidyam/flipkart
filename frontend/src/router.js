@@ -16,8 +16,20 @@ const routes = [
     meta: { requiresAuth: false },
   },
   {
+    path: '/signup',
+    name: 'Signup',
+    component: () => import('@/pages/Login.vue'),
+    meta: { requiresAuth: false },
+  },
+  {
     path: '/shop',
     name: 'Shop',
+    component: () => import('@/pages/Shop.vue'),
+    meta: { requiresAuth: false },
+  },
+  {
+    path: '/search',
+    name: 'Search',
     component: () => import('@/pages/Shop.vue'),
     meta: { requiresAuth: false },
   },
@@ -32,6 +44,12 @@ const routes = [
     path: '/cart',
     name: 'Cart',
     component: () => import('@/pages/Cart.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/wishlist',
+    name: 'Wishlist',
+    component: () => import('@/pages/Wishlist.vue'),
     meta: { requiresAuth: true },
   },
   {
@@ -65,21 +83,17 @@ const router = createRouter({
   routes,
 })
 
-// Authentication Guard
 router.beforeEach(async (to, from, next) => {
   const { isLoggedIn } = sessionStore()
   const { fetchProducts } = productStore()
 
-  // Load products
   await fetchProducts()
 
-  // If page requires auth but user is not logged in
   if (to.meta.requiresAuth && !isLoggedIn) {
     window.location.href = '/login?redirect-to=/flipkart'
     return
   }
 
-  // If user tries to access login page but is already logged in
   if (to.name === 'Login' && isLoggedIn) {
     next({ name: 'Home' })
     return
